@@ -935,3 +935,72 @@
                     </div>
                     
                     <div class="savings-item">
+                        <div class="savings-info">
+                            <h4>Tabungan THR</h4>
+                            <p>Diajukan pada 1 Januari 2024</p>
+                            <div class="status-badge status-pending">Pending</div>
+                        </div>
+                        <div class="savings-amount">Rp 1.000.000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+        
+        // Add active state to navigation
+        document.querySelectorAll('.nav-item a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all items
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Add active class to clicked item
+                this.parentElement.classList.add('active');
+            });
+        });
+        
+        // Auto close sidebar on mobile when clicking nav items
+        if (window.innerWidth <= 1024) {
+            document.querySelectorAll('.nav-item a').forEach(link => {
+                link.addEventListener('click', function() {
+                    setTimeout(() => {
+                        toggleSidebar();
+                    }, 300);
+                });
+            });
+        }
+        
+        // Smooth animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all stat cards and content cards
+        document.querySelectorAll('.stat-card, .content-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</html>
+                
