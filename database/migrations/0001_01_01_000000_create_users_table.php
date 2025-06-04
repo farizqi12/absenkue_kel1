@@ -12,13 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->id(); // Sama dengan bigIncrements('id') tapi lebih modern
             $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('username')->unique()->default(''); // Dengan nilai default
             $table->string('password');
-            $table->rememberToken();
+            $table->enum('role', ['kepala sekolah', 'guru', 'murid'])->default('guru'); // Gunakan enum untuk role yang fixed
+            $table->string('fotoprofil')->nullable();
+            $table->rememberToken(); // Untuk fitur remember me
             $table->timestamps();
+            $table->softDeletes(); // Tambahkan soft delete
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -36,7 +38,6 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
     }
-
     /**
      * Reverse the migrations.
      */
