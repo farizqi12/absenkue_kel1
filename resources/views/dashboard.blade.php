@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absenkeu Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #4a6bff;
+            --orange-color: #ff7b54;
+            --text-color: #333;
+            --light-gray: #f8fafc;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --sidebar-width: 280px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            animation: slideInLeft 0.8s ease-out;
+        }
+        
+        .sidebar-header {
+            padding: 30px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #4a6bff, #667eea);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 22px;
+            transform: rotate(-15deg);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .brand-info h2 {
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .brand-info p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+        
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            margin: 5px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            animation: slideInLeft 0.6s ease-out both;
+        }
+        
+        .nav-item:nth-child(1) { animation-delay: 0.1s; }
+        .nav-item:nth-child(2) { animation-delay: 0.2s; }
+        .nav-item:nth-child(3) { animation-delay: 0.3s; }
+        .nav-item:nth-child(4) { animation-delay: 0.4s; }
+        .nav-item:nth-child(5) { animation-delay: 0.5s; }
+        
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-item a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .nav-item a:hover::before {
+            left: 100%;
+        }
+        
+        .nav-item a:hover,
+        .nav-item.active a {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            animation: slideInRight 0.8s ease-out;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideDown 0.8s ease-out 0.2s both;
+        }
+        
+        .header-left h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .header-left p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--orange-color), #ff9500);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .user-details h4 {
+            color: white;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        
+        .user-details p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+        
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            animation: slideUp 0.6s ease-out both;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card:nth-child(1) { animation-delay: 0.3s; }
+        .stat-card:nth-child(2) { animation-delay: 0.4s; }
+        .stat-card:nth-child(3) { animation-delay: 0.5s; }
+        .stat-card:nth-child(4) { animation-delay: 0.6s; }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: rotate(45deg);
+            transition: transform 0.6s ease;
+        }
+        
+        .stat-card:hover::before {
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .stat-icon.success { background: linear-gradient(135deg, var(--success-color), #059669); }
+        .stat-icon.warning { background: linear-gradient(135deg, var(--warning-color), #d97706); }
+        .stat-icon.danger { background: linear-gradient(135deg, var(--danger-color), #dc2626); }
+        .stat-icon.primary { background: linear-gradient(135deg, var(--primary-color), #3b82f6); }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-change {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        
+        .stat-change.positive {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+        
+        .stat-change.negative {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+        
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .content-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.8s ease-out both;
+        }
+        
+        .content-card:first-child { animation-delay: 0.7s; }
+        .content-card:last-child { animation-delay: 0.8s; }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .card-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .view-all {
+            color: var(--orange-color);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .view-all:hover {
+            color: #ff9500;
+            transform: translateX(5px);
+        }
+        
+        /* Recent Activity */
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 0 -15px;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 16px;
+            color: white;
+        }
+        
+        .activity-content h4 {
+            color: white;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .activity-content p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+        
+        .activity-time {
+            margin-left: auto;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .quick-action {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .quick-action:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+        }
+        
+        .quick-action-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--orange-color), #ff9500);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 20px;
+        }
+        
+        .quick-action h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .quick-action p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Mobile Sidebar Toggle */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        
+        /* Animations */
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: rotate(-15deg) scale(1); }
+            50% { transform: rotate(-15deg) scale(1.1); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 80px 20px 20px;
+            }
+            
+            .mobile-toggle {
+                display: block;
+            }
+            
+            .overlay.show {
+                display: block;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 20px;
+            }
+            
+            .stat-card {
+                padding: 25px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 80px 15px 15px;
+            }
+            
+            .header {
+                padding: 20px;
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .content-card {
+                padding: 20px;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 100%;
+            }
+            
+            .main-content {
+                padding: 70px 10px 10px;
+            }
+            
+            .header {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            .header-left h1 {
+                font-size: 24px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stat-value {
+                font-size: 28px;
+            }
+            
+            .content-card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Mobile Toggle -->
+        <div class="mobile-toggle" onclick="toggleSidebar()">
+            ☰
+        </div>
+        
+        <!-- Overlay -->
+        <div class="overlay" onclick="toggleSidebar()"></div>
+        
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">A</div>
+                <div class="brand-info">
+                    <h2>Absenkeu</h2>
+                    <p>Dashboard Panel</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-item active">
+                    <a href="#dashboard">
+                        <div class="nav-icon">📊</div>
+                        Dashboard
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#attendance">
+                        <div class="nav-icon">👥</div>
+                        Kehadiran
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#employees">
+                        <div class="nav-icon">👤</div>
+                        Karyawan
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#reports">
+                        <div class="nav-icon">📈</div>
+                        Laporan
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#settings">
+                        <div class="nav-icon">⚙️</div>
+                        Pengaturan
+                    </a>
+                </div>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <h1>Selamat Datang!</h1>
+                    <p>Kelola kehadiran karyawan dengan mudah dan efisien</p>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <div class="user-avatar">AD</div>
+                        <div class="user-details">
+                            <h4>Admin User</h4>
+                            <p>Administrator</p>
+                        </div>
+                    </div>
+                    <button class="logout-btn">Logout</button>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon success">👥</div>
+                    </div>
+                    <div class="stat-value">156</div>
+                    <div class="stat-label">Total Karyawan</div>
+                    <div class="stat-change positive">+12% dari bulan lalu</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon primary">✅</div>
+                    </div>
+                    <div class="stat-value">89%</div>
+                    <div class="stat-label">Tingkat Kehadiran</div>
+                    <div class="stat-change positive">+5% dari bulan lalu</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon warning">⏰</div>
+                    </div>
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">Terlambat Hari Ini</div>
+                    <div class="stat-change negative">-8% dari kemarin</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon danger">❌</div>
+                    </div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Tidak Hadir</div>
+                    <div class="stat-change positive">-15% dari kemarin</div>
+                </div>
+            </div>
+            
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Recent Activity -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Aktivitas Terbaru</h3>
+                        <a href="#" class="view-all">Lihat Semua →</a>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon success">✅</div>
+                        <div class="activity-content">
+                            <h4>John Doe melakukan check-in</h4>
+                            <p>Divisi IT - Tepat waktu</p>
+                        </div>
+                        <div class="activity-time">2 menit lalu</div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon warning">⏰</div>
+                        <div class="activity-content">
+                            <h4>Sarah Smith terlambat check-in</h4>
+                            <p>Divisi Marketing - Terlambat 15 menit</p>
+                        </div>
+                        <div class="activity-time">15 menit lalu</div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon primary">📝</div>
+                        <div class="activity-content">
+                            <h4>Mike Johnson mengajukan izin</h4>
+                            <p>Divisi Finance - Sakit</p>
+                        </div>
+                        <div class="activity-time">1 jam lalu</div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon success">✅</div>
+                        <div class="activity-content">
+                            <h4>Lisa Wong melakukan check-out</h4>
+                            <p>Divisi HR - Selesai kerja</p>
+                        </div>
+                        <div class="activity-time">2 jam lalu</div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Aksi Cepat</h3>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <a href="#" class="quick-action">
+                            <div class="quick-action-icon">👤</div>
+                            <h4>Tambah Karyawan</h4>
+                            <p>Daftarkan karyawan baru</p>
+                        </a>
+                        
+                        <a href="#" class="quick-action">
+                            <div class="quick-action-icon">📊</div>
+                            <h4>Laporan Harian</h4>
+                            <p>Lihat laporan hari ini</p>
+                        </a>
+                        
+                        <a href="#" class="quick-action">
+                            <div class="quick-action-icon">⚙️</div>
+                            <h4>Pengaturan</h4>
+                            <p>Kelola sistem</p>
+                        </a>
+                        
+                        <a href="#" class="quick-action">
+                            <div class="quick-action-icon">📈</div>
+                            <h4>Analitik</h4>
+                            <p>Data dan statistik</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+        
+        // Add active state to navigation
+        document.querySelectorAll('.nav-item a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all items
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Add active class to clicked item
+                this.parentElement.classList.add('active');
+            });
+        });
+        
+        // Auto close sidebar on mobile when clicking nav items
+        if (window.innerWidth <= 1024) {
+            document.querySelectorAll('.nav-item a').forEach(link => {
+                link.addEventListener('click', function() {
+                    setTimeout(() => {
+                        toggleSidebar();
+                    }, 300);
+                });
+            });
+        }
+        
+        // Smooth animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all stat cards and content cards
+        document.querySelectorAll('.stat-card, .content-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
