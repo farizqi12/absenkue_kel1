@@ -12,7 +12,7 @@ class Profil extends Controller
     }
      public function showYudha()
     {
-        return view('profil.');
+        return view('profil.yudha');
     }
      public function showSoviki()
     {

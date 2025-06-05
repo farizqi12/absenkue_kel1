@@ -12,6 +12,9 @@ Route::post('/logout', [Login::class, 'logout'])->name('logout');
 Route::get('/profil/farizqi', [App\Http\Controllers\Profil::class, 'showFarizqi'])
     ->name('profil.farizqi');
 
+Route::get('/profil/yudha', [App\Http\Controllers\Profil::class, 'showYudha'])
+    ->name('profil.yudha');
+
 
 Route::middleware(['auth', 'only.kepala.sekolah'])->group(function () {
     Route::get('/dashboard', [Login::class, 'dashboard'])->middleware(middleware: 'auth');
