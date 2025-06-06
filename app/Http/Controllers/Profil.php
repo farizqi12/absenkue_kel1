@@ -16,6 +16,6 @@ class Profil extends Controller
     }
      public function showSoviki()
     {
-        return view('profil.');
+        return view('profil.soviki');
     }
 }
